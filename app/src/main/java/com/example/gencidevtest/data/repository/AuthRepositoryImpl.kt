@@ -1,6 +1,6 @@
 package com.example.gencidevtest.data.repository
 
-import com.example.gencidevtest.data.local.preferences.AuthPreferences
+import com.example.gencidevtest.data.local.AuthPreferences
 import com.example.gencidevtest.data.remote.api.AuthApiService
 import com.example.gencidevtest.data.remote.dto.LoginRequest
 import com.example.gencidevtest.domain.model.User

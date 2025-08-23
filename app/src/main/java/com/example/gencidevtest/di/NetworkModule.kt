@@ -1,6 +1,7 @@
 package com.example.gencidevtest.di
 
 import com.example.gencidevtest.data.remote.api.AuthApiService
+import com.example.gencidevtest.data.remote.api.CartApiService
 import com.example.gencidevtest.data.remote.api.ProductApiService
 import dagger.Module
 import dagger.Provides
@@ -48,5 +49,11 @@ object NetworkModule {
     @Singleton
     fun provideProductApiService(retrofit: Retrofit): ProductApiService {
         return retrofit.create(ProductApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartApiService(retrofit: Retrofit): CartApiService {
+        return retrofit.create(CartApiService::class.java)
     }
 }

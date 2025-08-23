@@ -17,7 +17,7 @@ import com.example.gencidevtest.presentation.profile.screen.ProfileScreen
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Main : Screen("main")
-    object Products : Screen("products")
+    object Home : Screen("home")
     object Cart : Screen("cart")
     object Profile : Screen("profile")
 }
@@ -38,10 +38,10 @@ fun AppNavigation(
         ) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = Screen.Products.route,
+                startDestination = Screen.Home.route,
                 modifier = Modifier.padding(paddingValues)
             ) {
-                composable(Screen.Products.route) {
+                composable(Screen.Home.route) {
                     HomeScreen(
                         onProductClick = { product ->
                             // Handle product click - navigate to detail screen

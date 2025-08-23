@@ -1,4 +1,4 @@
-package com.example.gencidevtest.data.local.preferences
+package com.example.gencidevtest.data.local
 
 import android.content.Context
 import androidx.datastore.core.DataStore

@@ -1,20 +1,11 @@
 package com.example.gencidevtest.presentation.common.components
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,12 +23,14 @@ import com.example.gencidevtest.domain.model.Product
 fun ProductCard(
     product: Product,
     onProductClick: (Product) -> Unit,
-    modifier: Modifier = Modifier
+    onAddToCart: (Product) -> Unit,
+    isAddingToCart: Boolean = false,
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(280.dp),
+            .height(320.dp),
         onClick = { onProductClick(product) },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.background,
@@ -46,7 +39,7 @@ fun ProductCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
-            // Product Image
+            // Loading Gambar Produk
             AsyncImage(
                 model = product.thumbnail.ifEmpty { "https://via.placeholder.com/200x150" },
                 contentDescription = product.title,
@@ -57,7 +50,6 @@ fun ProductCard(
                 contentScale = ContentScale.Crop
             )
 
-            // Product Info
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -113,14 +105,44 @@ fun ProductCard(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(8.dp))
+
                 // Stock info
                 if (product.stock <= 10) {
                     Text(
                         text = "Only ${product.stock} left",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
+                }
+
+                // Add to Cart Button
+                Button(
+                    onClick = { onAddToCart(product) },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isAddingToCart && product.stock > 0,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    if (isAddingToCart) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = if (product.stock > 0) "Add to Cart" else "Out of Stock",
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
                 }
             }
         }

@@ -16,15 +16,26 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.gencidevtest.domain.model.Product
 import com.example.gencidevtest.presentation.common.components.ProductCard
 import com.example.gencidevtest.presentation.home.viewmodel.ProductViewModel
+import com.example.gencidevtest.presentation.cart.viewmodel.CartViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onProductClick: (Product) -> Unit,
-    viewModel: ProductViewModel = hiltViewModel()
+    productViewModel: ProductViewModel = hiltViewModel(),
+    cartViewModel: CartViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val productUiState by productViewModel.uiState.collectAsState()
+    val cartUiState by cartViewModel.uiState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
+
+    // Show add to cart messages
+    LaunchedEffect(cartUiState.addToCartMessage) {
+        cartUiState.addToCartMessage?.let {
+            // Message will be shown in UI, clear after showing
+            // You can implement SnackBar here if needed
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -44,7 +55,7 @@ fun HomeScreen(
             value = searchQuery,
             onValueChange = {
                 searchQuery = it
-                viewModel.searchProducts(it)
+                productViewModel.searchProducts(it)
             },
             label = { Text("Search products...") },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
@@ -54,9 +65,35 @@ fun HomeScreen(
             singleLine = true
         )
 
+        // Add to Cart Message
+        cartUiState.addToCartMessage?.let { message ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (message.contains("success")) {
+                        MaterialTheme.colorScheme.primaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.errorContainer
+                    }
+                )
+            ) {
+                Text(
+                    text = message,
+                    modifier = Modifier.padding(16.dp),
+                    color = if (message.contains("success")) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onErrorContainer
+                    }
+                )
+            }
+        }
+
         // Content
         when {
-            uiState.isLoading -> {
+            productUiState.isLoading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -65,27 +102,27 @@ fun HomeScreen(
                 }
             }
 
-            uiState.errorMessage != null -> {
+            productUiState.errorMessage != null -> {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = uiState.errorMessage!!,
+                        text = productUiState.errorMessage!!,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.error
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Button(onClick = { viewModel.loadProducts() }) {
-                        Text("Retry")
+                    Button(onClick = { productViewModel.loadProducts() }) {
+                        Text("Coba Lagi")
                     }
                 }
             }
 
-            uiState.products.isEmpty() -> {
+            productUiState.products.isEmpty() -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -101,10 +138,14 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(uiState.products) { product ->
+                    items(productUiState.products) { product ->
                         ProductCard(
                             product = product,
-                            onProductClick = onProductClick
+                            onProductClick = onProductClick,
+                            onAddToCart = { selectedProduct ->
+                                cartViewModel.addToCart(selectedProduct.id, 1)
+                            },
+                            isAddingToCart = cartUiState.isAddingToCart
                         )
                     }
                 }

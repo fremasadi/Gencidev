@@ -1,7 +1,9 @@
 package com.example.gencidevtest.data.repository
 
 import com.example.gencidevtest.data.remote.api.ProductApiService
+import com.example.gencidevtest.data.remote.dto.CategoryDto
 import com.example.gencidevtest.data.remote.dto.ProductDto
+import com.example.gencidevtest.domain.model.Category
 import com.example.gencidevtest.domain.model.Product
 import com.example.gencidevtest.domain.repository.ProductRepository
 import javax.inject.Inject
@@ -29,6 +31,26 @@ class ProductRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun getCategories(): Result<List<Category>> {
+        return try {
+            val response = apiService.getCategories()
+            val categories = response.map { it.toDomain() }
+            Result.success(categories)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getProductsByCategory(category: String, limit: Int, skip: Int): Result<List<Product>> {
+        return try {
+            val response = apiService.getProductsByCategory(category, limit, skip)
+            val products = response.products.map { it.toDomain() }
+            Result.success(products)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
 
 // Extension function to convert DTO to Domain
@@ -45,5 +67,13 @@ private fun ProductDto.toDomain(): Product {
         brand = brand ?: "",
         thumbnail = thumbnail,
         images = images
+    )
+}
+
+private fun CategoryDto.toDomain(): Category {
+    return Category(
+        slug = slug,
+        name = name,
+        url = url
     )
 }
