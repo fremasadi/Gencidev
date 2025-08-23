@@ -19,7 +19,7 @@ import com.example.gencidevtest.presentation.home.viewmodel.ProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductsScreen(
+fun HomeScreen(
     onProductClick: (Product) -> Unit,
     viewModel: ProductViewModel = hiltViewModel()
 ) {

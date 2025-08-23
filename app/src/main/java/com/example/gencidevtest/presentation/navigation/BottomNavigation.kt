@@ -16,9 +16,9 @@ sealed class BottomNavItem(
     val icon: ImageVector,
     val label: String
 ) {
-    object Home : BottomNavItem("products", Icons.Default.Home, "Home")
-    object Cart : BottomNavItem("cart", Icons.Default.ShoppingCart, "Cart")
-    object Profile : BottomNavItem("profile", Icons.Default.Person, "Profile")
+    data object Home : BottomNavItem("products", Icons.Default.Home, "Home")
+    data object Cart : BottomNavItem("cart", Icons.Default.ShoppingCart, "Cart")
+    data object Profile : BottomNavItem("profile", Icons.Default.Person, "Profile")
 }
 
 @Composable

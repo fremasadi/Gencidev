@@ -11,7 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.gencidevtest.presentation.auth.screen.LoginScreen
 import com.example.gencidevtest.presentation.auth.viewmodel.AuthViewModel
 import com.example.gencidevtest.presentation.cart.screen.CartScreen
-import com.example.gencidevtest.presentation.home.screen.ProductsScreen
+import com.example.gencidevtest.presentation.home.screen.HomeScreen
 import com.example.gencidevtest.presentation.profile.screen.ProfileScreen
 
 sealed class Screen(val route: String) {
@@ -42,7 +42,7 @@ fun AppNavigation(
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable(Screen.Products.route) {
-                    ProductsScreen(
+                    HomeScreen(
                         onProductClick = { product ->
                             // Handle product click - navigate to detail screen
                         }

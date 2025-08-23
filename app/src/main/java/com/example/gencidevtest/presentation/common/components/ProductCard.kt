@@ -1,9 +1,20 @@
 package com.example.gencidevtest.presentation.common.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.gencidevtest.domain.model.Product
 
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductCard(
@@ -27,12 +39,16 @@ fun ProductCard(
             .fillMaxWidth()
             .height(280.dp),
         onClick = { onProductClick(product) },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.onSecondary
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
             // Product Image
             AsyncImage(
-                model = if (product.thumbnail.isNotEmpty()) product.thumbnail else "https://via.placeholder.com/200x150",
+                model = product.thumbnail.ifEmpty { "https://via.placeholder.com/200x150" },
                 contentDescription = product.title,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -85,7 +101,7 @@ fun ProductCard(
 
                     // Rating
                     Surface(
-                        color = MaterialTheme.colorScheme.primaryContainer,
+                        color = MaterialTheme.colorScheme.surface,
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
