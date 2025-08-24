@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/gencidevtest/data/local/AuthPreferences.kt
 package com.example.gencidevtest.data.local
 
 import android.content.Context
@@ -6,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -15,7 +17,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("a
 
 @Singleton
 class AuthPreferences @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
     private object Keys {
         val ACCESS_TOKEN = stringPreferencesKey("access_token")
@@ -65,6 +67,21 @@ class AuthPreferences @Inject constructor(
     fun getFirstName(): Flow<String?> =
         context.dataStore.data.map { preferences ->
             preferences[Keys.FIRST_NAME]
+        }
+
+    fun getUserId(): Flow<String?> =
+        context.dataStore.data.map { preferences ->
+            preferences[Keys.USER_ID]
+        }
+
+    fun getEmail(): Flow<String?> =
+        context.dataStore.data.map { preferences ->
+            preferences[Keys.EMAIL]
+        }
+
+    fun getLastName(): Flow<String?> =
+        context.dataStore.data.map { preferences ->
+            preferences[Keys.LAST_NAME]
         }
 
     suspend fun clearAuthData() {
