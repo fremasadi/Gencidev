@@ -21,9 +21,12 @@ import coil.compose.AsyncImage
 import com.example.gencidevtest.domain.model.Cart
 import com.example.gencidevtest.domain.model.CartProduct
 import com.example.gencidevtest.presentation.cart.viewmodel.CartViewModel
+import com.example.gencidevtest.presentation.common.components.CartCard
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun CartScreen(
+    modifier: Modifier = Modifier,
     viewModel: CartViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -36,7 +39,7 @@ fun CartScreen(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
@@ -183,135 +186,3 @@ fun CartScreen(
     }
 }
 
-@Composable
-private fun CartCard(cart: Cart) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            // Cart Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Cart #${cart.id}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Text(
-                    text = "User: ${cart.userId}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Products in cart
-            cart.products.forEach { product ->
-                CartProductItem(product = product)
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            Divider()
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Cart totals
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = "Total Products: ${cart.totalProducts}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Text(
-                        text = "Total Quantity: ${cart.totalQuantity}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = "$${String.format("%.2f", cart.total)}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = "$${String.format("%.2f", cart.discountedTotal)}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-        }
-    }
-}
-
-@SuppressLint("DefaultLocale")
-@Composable
-private fun CartProductItem(product: CartProduct) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Loading Product Image
-        AsyncImage(
-            model = product.thumbnail.ifEmpty { "https://via.placeholder.com/60x60" },
-            contentDescription = product.title,
-            modifier = Modifier
-                .size(60.dp)
-                .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop
-        )
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        // Product Info
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = product.title,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Medium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                text = "Qty: ${product.quantity} × $${String.format("%.2f", product.price)}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        // Price
-        Column(
-            horizontalAlignment = Alignment.End
-        ) {
-            if (product.discountPercentage > 0) {
-                Text(
-                    text = "$${String.format("%.2f", product.total)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Text(
-                text = "$${String.format("%.2f", product.discountedTotal)}",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-    }
-}

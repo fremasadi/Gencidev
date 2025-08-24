@@ -11,5 +11,8 @@ data class Product(
     val stock: Int,
     val brand: String,
     val thumbnail: String,
-    val images: List<String>
+    val images: List<String>,
+    val sku: String = "",
+    val weight: Int = 0,
+    val tags: List<String> = emptyList()
 )

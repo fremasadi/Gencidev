@@ -1,6 +1,7 @@
 package com.example.gencidevtest.data.remote.api
 
 import com.example.gencidevtest.data.remote.dto.CategoryDto
+import com.example.gencidevtest.data.remote.dto.ProductDto
 import com.example.gencidevtest.data.remote.dto.ProductsResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -12,6 +13,11 @@ interface ProductApiService {
         @Query("limit") limit: Int = 30,
         @Query("skip") skip: Int = 0
     ): ProductsResponse
+
+    @GET("products/{id}")
+    suspend fun getProductById(
+        @Path("id") productId: Int
+    ): ProductDto
 
     @GET("products/search")
     suspend fun searchProducts(

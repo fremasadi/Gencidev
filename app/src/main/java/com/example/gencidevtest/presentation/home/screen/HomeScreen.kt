@@ -48,6 +48,7 @@ import com.example.gencidevtest.presentation.home.viewmodel.ProductViewModel
 @Composable
 fun HomeScreen(
     onProductClick: (Product) -> Unit,
+    modifier: Modifier = Modifier,
     productViewModel: ProductViewModel = hiltViewModel(),
     cartViewModel: CartViewModel = hiltViewModel()
 ) {
@@ -55,15 +56,16 @@ fun HomeScreen(
     val cartUiState by cartViewModel.uiState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     val uiState by productViewModel.uiState.collectAsState()
+
     // Show add to cart messages
     LaunchedEffect(cartUiState.addToCartMessage) {
         cartUiState.addToCartMessage?.let {
-
+            // You can show snackbar here if needed
         }
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
@@ -129,7 +131,6 @@ fun HomeScreen(
             }
         }
 
-
         // Add to Cart Message
         cartUiState.addToCartMessage?.let { message ->
             Card(
@@ -182,7 +183,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(onClick = { productViewModel.loadProducts() }) {
-                        Text("Coba Lagi")
+                        Text("Try Again")
                     }
                 }
             }
@@ -207,10 +208,7 @@ fun HomeScreen(
                         ProductCard(
                             product = product,
                             onProductClick = onProductClick,
-                            onAddToCart = { selectedProduct ->
-                                cartViewModel.addToCart(selectedProduct.id, 1)
-                            },
-                            isAddingToCart = cartUiState.isAddingToCart
+
                         )
                     }
                 }

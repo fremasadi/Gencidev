@@ -22,6 +22,16 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getProductById(productId: Int): Result<Product> {
+        return try {
+            val response = apiService.getProductById(productId)
+            val product = response.toDomain()
+            Result.success(product)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun searchProducts(query: String, limit: Int, skip: Int): Result<List<Product>> {
         return try {
             val response = apiService.searchProducts(query, limit, skip)
@@ -66,7 +76,10 @@ private fun ProductDto.toDomain(): Product {
         stock = stock,
         brand = brand ?: "",
         thumbnail = thumbnail,
-        images = images
+        images = images,
+        sku = sku,
+        weight = weight,
+        tags = tags
     )
 }
 

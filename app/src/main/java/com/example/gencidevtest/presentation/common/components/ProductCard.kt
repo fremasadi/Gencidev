@@ -3,8 +3,7 @@ package com.example.gencidevtest.presentation.common.components
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,14 +22,11 @@ import com.example.gencidevtest.domain.model.Product
 fun ProductCard(
     product: Product,
     onProductClick: (Product) -> Unit,
-    onAddToCart: (Product) -> Unit,
-    isAddingToCart: Boolean = false,
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth()
-            .height(320.dp),
+            .fillMaxWidth(),
         onClick = { onProductClick(product) },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.background,
@@ -117,33 +113,7 @@ fun ProductCard(
                     )
                 }
 
-                // Add to Cart Button
-                Button(
-                    onClick = { onAddToCart(product) },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !isAddingToCart && product.stock > 0,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    if (isAddingToCart) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp),
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = if (product.stock > 0) "Add to Cart" else "Out of Stock",
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
-                }
+
             }
         }
     }

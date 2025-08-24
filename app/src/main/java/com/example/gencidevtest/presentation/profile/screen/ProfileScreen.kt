@@ -13,12 +13,13 @@ import com.example.gencidevtest.presentation.auth.viewmodel.AuthViewModel
 @Composable
 fun ProfileScreen(
     onLogout: () -> Unit,
+    modifier: Modifier = Modifier,
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val uiState by authViewModel.uiState.collectAsState()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
