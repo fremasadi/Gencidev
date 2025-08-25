@@ -11,5 +11,4 @@ class GetCurrentUserProfileUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<User?> = userRepository.getCurrentUser()
 
-    suspend fun getCurrentUserSync(): User? = userRepository.getCurrentUserSync()
 }

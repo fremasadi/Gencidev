@@ -54,10 +54,11 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun getCurrentUserSync(): User? {
         return try {
             userDao.getCurrentUserSync()?.toDomain()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
+
 
     override fun getAllUsers(): Flow<List<User>> {
         return userDao.getAllUsers().map { userEntities ->
@@ -76,7 +77,6 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun clearCurrentUser(): Result<Unit> {
         return try {
-            val rowsAffected = userDao.clearCurrentUser()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

@@ -101,7 +101,7 @@ fun HomeScreen(
     LaunchedEffect(isOnline) {
         if (isOnline && productUiState.isOffline) {
             snackbarHostState.showSnackbar(
-                message = "✅ Back online! Data refreshed",
+                message = "✅ Data disegarkan",
                 duration = androidx.compose.material3.SnackbarDuration.Short
             )
         }
@@ -112,7 +112,6 @@ fun HomeScreen(
         categoryUiState.selectedCategory?.let { category ->
             productViewModel.loadProductsByCategory(category.slug)
         } ?: run {
-            // If no category selected and not searching, load all products
             if (!productViewModel.isSearchActive()) {
                 productViewModel.loadProducts()
             }
@@ -130,7 +129,7 @@ fun HomeScreen(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Produk",
+                text = "Product",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -190,9 +189,9 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = if (productUiState.searchQuery.isNotEmpty()) {
-                            "Pencarian: \"${productUiState.searchQuery}\""
+                            "Search: \"${productUiState.searchQuery}\""
                         } else {
-                            "Cari produk..."
+                            "Search..."
                         },
                         style = MaterialTheme.typography.bodyLarge,
                         color = if (productUiState.searchQuery.isNotEmpty()) {
@@ -212,7 +211,7 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Kategori",
+                        text = "Category",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -239,7 +238,7 @@ fun HomeScreen(
                             },
                             label = {
                                 Text(
-                                    text = "Semua",
+                                    text = "All",
                                     fontWeight = if (categoryUiState.selectedCategory == null) FontWeight.Bold else FontWeight.Normal
                                 )
                             },

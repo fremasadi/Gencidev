@@ -15,8 +15,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+
 class NetworkConnectionObserver @Inject constructor(
-    private val context: Context
+    context: Context
 ) {
 
     companion object {

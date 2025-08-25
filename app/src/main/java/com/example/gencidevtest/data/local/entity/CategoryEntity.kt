@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/gencidevtest/data/local/entity/CategoryEntity.kt
 package com.example.gencidevtest.data.local.entity
 
 import androidx.room.Entity

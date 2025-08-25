@@ -3,6 +3,7 @@ package com.example.gencidevtest.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.gencidevtest.data.local.dao.CartDao
 import com.example.gencidevtest.data.local.dao.CategoryDao
 import com.example.gencidevtest.data.local.dao.ProductDao
 import com.example.gencidevtest.data.local.dao.UserDao
@@ -43,5 +44,10 @@ object DatabaseModule {
     @Provides
     fun provideCategoryDao(database: AppDatabase): CategoryDao {
         return database.categoryDao()
+    }
+
+    @Provides
+    fun provideCartDao(database: AppDatabase): CartDao {  // Added CartDao provider
+        return database.cartDao()
     }
 }

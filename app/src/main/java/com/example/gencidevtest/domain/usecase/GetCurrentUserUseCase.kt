@@ -11,11 +11,6 @@ class GetCurrentUserUseCase @Inject constructor(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository // Added Room repository
 ) {
-    // Get current user from Room (preferred for complete data)
-    fun fromRoom(): Flow<User?> = userRepository.getCurrentUser()
-
-    // Get current user from DataStore (fallback)
-    fun fromDataStore(): Flow<User?> = authRepository.getCurrentUser()
 
     // Default implementation - tries Room first, then DataStore
     operator fun invoke(): Flow<User?> = userRepository.getCurrentUser()

@@ -29,14 +29,6 @@ class CategoryViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CategoryUiState())
     val uiState: StateFlow<CategoryUiState> = _uiState.asStateFlow()
 
-    // Expose selected category as separate flow for easy observation
-    val selectedCategory: StateFlow<Category?> = _uiState
-        .map { it.selectedCategory }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
-        )
 
     init {
         Log.d(TAG, "CategoryViewModel initialized")
@@ -110,21 +102,6 @@ class CategoryViewModel @Inject constructor(
         loadCategories()
     }
 
-    fun retryLoadCategories() {
-        Log.d(TAG, "Retrying load categories")
-        clearError()
-        loadCategories()
-    }
-
-    fun clearError() {
-        Log.d(TAG, "Clearing error message")
-        _uiState.update { it.copy(errorMessage = null) }
-    }
-
-    // Helper method to get category by slug
-    fun getCategoryBySlug(slug: String): Category? {
-        return _uiState.value.categories.find { it.slug == slug }
-    }
 
     // Helper method to check if category is selected
     fun isCategorySelected(category: Category): Boolean {

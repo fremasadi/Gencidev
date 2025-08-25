@@ -20,8 +20,6 @@ import com.example.gencidevtest.presentation.home.screen.SearchScreen
 import com.example.gencidevtest.presentation.profile.screen.ProfileScreen
 
 sealed class Screen(val route: String) {
-    object Login : Screen("login")
-    object Main : Screen("main")
     object Home : Screen("home")
     object Cart : Screen("cart")
     object Profile : Screen("profile")
@@ -91,11 +89,7 @@ fun AppNavigation(
                 }
 
                 composable(Screen.Profile.route) {
-                    ProfileScreen(
-                        onLogout = {
-                            // Navigation will be handled by AuthViewModel state change
-                        }
-                    )
+                    ProfileScreen()
                 }
 
                 composable(

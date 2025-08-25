@@ -49,40 +49,11 @@ class AuthPreferences @Inject constructor(
         }
     }
 
-    fun getAccessToken(): Flow<String?> =
-        context.dataStore.data.map { preferences ->
-            preferences[Keys.ACCESS_TOKEN]
-        }
-
     fun getRefreshToken(): Flow<String?> =
         context.dataStore.data.map { preferences ->
             preferences[Keys.REFRESH_TOKEN]
         }
 
-    fun getUsername(): Flow<String?> =
-        context.dataStore.data.map { preferences ->
-            preferences[Keys.USERNAME]
-        }
-
-    fun getFirstName(): Flow<String?> =
-        context.dataStore.data.map { preferences ->
-            preferences[Keys.FIRST_NAME]
-        }
-
-    fun getUserId(): Flow<String?> =
-        context.dataStore.data.map { preferences ->
-            preferences[Keys.USER_ID]
-        }
-
-    fun getEmail(): Flow<String?> =
-        context.dataStore.data.map { preferences ->
-            preferences[Keys.EMAIL]
-        }
-
-    fun getLastName(): Flow<String?> =
-        context.dataStore.data.map { preferences ->
-            preferences[Keys.LAST_NAME]
-        }
 
     suspend fun clearAuthData() {
         context.dataStore.edit { preferences ->

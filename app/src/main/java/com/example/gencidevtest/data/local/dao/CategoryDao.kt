@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/gencidevtest/data/local/dao/CategoryDao.kt
 package com.example.gencidevtest.data.local.dao
 
 import androidx.room.*

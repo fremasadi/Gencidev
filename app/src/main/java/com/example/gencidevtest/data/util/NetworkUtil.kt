@@ -1,5 +1,6 @@
 package com.example.gencidevtest.data.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -7,11 +8,13 @@ import android.os.Build
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@Suppress("DEPRECATION")
 @Singleton
 class NetworkUtil @Inject constructor(
     private val context: Context
 ) {
 
+    @SuppressLint("ObsoleteSdkInt")
     fun isNetworkAvailable(): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 

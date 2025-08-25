@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/gencidevtest/data/repository/ProductRepositoryImpl.kt
 package com.example.gencidevtest.data.repository
 
 import android.util.Log
@@ -13,9 +12,6 @@ import com.example.gencidevtest.data.util.NetworkUtil
 import com.example.gencidevtest.domain.model.Category
 import com.example.gencidevtest.domain.model.Product
 import com.example.gencidevtest.domain.repository.ProductRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ProductRepositoryImpl @Inject constructor(
@@ -234,30 +230,7 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
-    // Flow-based methods for real-time data
-    fun getProductsFlow(): Flow<List<Product>> {
-        return productDao.getAllProducts().map { entities ->
-            entities.map { it.toDomain() }
-        }
-    }
 
-    fun getCategoriesFlow(): Flow<List<Category>> {
-        return categoryDao.getAllCategories().map { entities ->
-            entities.map { it.toDomain() }
-        }
-    }
-
-    fun getProductsByCategoryFlow(category: String): Flow<List<Product>> {
-        return productDao.getProductsByCategory(category).map { entities ->
-            entities.map { it.toDomain() }
-        }
-    }
-
-    fun searchProductsFlow(query: String): Flow<List<Product>> {
-        return productDao.searchProducts(query).map { entities ->
-            entities.map { it.toDomain() }
-        }
-    }
 
     private suspend fun isCacheStale(): Boolean {
         val lastUpdateTime = productDao.getLastUpdateTime() ?: return true
@@ -275,21 +248,6 @@ class ProductRepositoryImpl @Inject constructor(
         return isStale
     }
 
-    suspend fun clearCache() {
-        Log.d(TAG, "Clearing product cache")
-        productDao.deleteAllProducts()
-        categoryDao.deleteAllCategories()
-    }
-
-    suspend fun getCacheInfo(): String {
-        val productCount = productDao.getProductCount()
-        val categoryCount = categoryDao.getCategoryCount()
-        val lastProductUpdate = productDao.getLastUpdateTime()
-        val lastCategoryUpdate = categoryDao.getLastUpdateTime()
-
-        return "Products: $productCount, Categories: $categoryCount, " +
-                "Last product update: $lastProductUpdate, Last category update: $lastCategoryUpdate"
-    }
 }
 
 // Extension functions to convert DTO to Domain

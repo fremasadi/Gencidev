@@ -70,8 +70,4 @@ class AuthViewModel @Inject constructor(
             logoutUseCase()
         }
     }
-
-    fun clearError() {
-        _uiState.update { it.copy(errorMessage = null) }
-    }
 }

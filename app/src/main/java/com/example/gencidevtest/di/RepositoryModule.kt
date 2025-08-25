@@ -15,6 +15,7 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
+@Suppress("unused")
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
 
