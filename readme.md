@@ -1,4 +1,4 @@
-# Genci Dev Test - Android E-commerce App
+# GenciDev Test - Android E-commerce App
 
 ## 📱 Overview
 
@@ -62,13 +62,13 @@ Genci Dev Test adalah aplikasi e-commerce Android yang dibangun menggunakan **Je
 ### Prerequisites
 - Android Studio Hedgehog (2023.1.1) atau lebih baru
 - Android SDK 24 - 36
-- JDK 11
+- JDK 17
 
 ### Langkah Instalasi
 
 1. **Clone Repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/fremasadi/Gencidev
    cd gencidevtest
    ```
 
