@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,8 +19,11 @@ import com.example.gencidevtest.presentation.home.screen.HomeScreen
 import com.example.gencidevtest.presentation.home.screen.ProductDetailScreen
 import com.example.gencidevtest.presentation.home.screen.SearchScreen
 import com.example.gencidevtest.presentation.profile.screen.ProfileScreen
+import com.example.gencidevtest.presentation.splash.screen.SplashScreen
 
 sealed class Screen(val route: String) {
+    object Splash : Screen("splash")
+    object Login : Screen("login")
     object Home : Screen("home")
     object Cart : Screen("cart")
     object Profile : Screen("profile")
@@ -32,36 +36,106 @@ sealed class Screen(val route: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation(
-    modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel = hiltViewModel()
+    modifier: Modifier = Modifier
 ) {
-    val uiState by authViewModel.uiState.collectAsState()
     val navController = rememberNavController()
 
-    if (uiState.isLoggedIn) {
-        // Main App with Bottom Navigation
-        Scaffold(
-            bottomBar = {
-                // Only show bottom navigation for main screens (not search or product detail)
-                val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-                val showBottomBar = when (currentRoute) {
-                    Screen.Home.route,
-                    Screen.Cart.route,
-                    Screen.Profile.route -> true
-                    else -> false
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Splash.route,
+        modifier = modifier
+    ) {
+        // Splash Screen
+        composable(Screen.Splash.route) {
+            SplashScreen(
+                onNavigateToLogin = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                },
+                onNavigateToHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
                 }
+            )
+        }
 
-                if (showBottomBar) {
-                    BottomNavigation(navController)
+        // Login Screen
+        composable(Screen.Login.route) {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
                 }
+            )
+        }
+
+        // Main App Screens with Bottom Navigation
+        composable(Screen.Home.route) {
+            MainAppContent(navController = navController)
+        }
+
+        composable(Screen.Cart.route) {
+            MainAppContent(navController = navController)
+        }
+
+        composable(Screen.Profile.route) {
+            MainAppContent(navController = navController)
+        }
+
+        // Search Screen (tanpa bottom navigation)
+        composable(Screen.Search.route) {
+            SearchScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onProductClick = { product ->
+                    navController.navigate(Screen.ProductDetail.createRoute(product.id))
+                }
+            )
+        }
+
+        // Product Detail Screen (tanpa bottom navigation)
+        composable(
+            route = Screen.ProductDetail.route,
+            arguments = listOf(navArgument("productId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getInt("productId") ?: 0
+            ProductDetailScreen(
+                productId = productId,
+                onBackClick = { navController.navigateUp() }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MainAppContent(
+    navController: NavHostController
+) {
+    Scaffold(
+        bottomBar = {
+            val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+            val showBottomBar = when (currentRoute) {
+                Screen.Home.route,
+                Screen.Cart.route,
+                Screen.Profile.route -> true
+                else -> false
             }
-        ) { paddingValues ->
-            NavHost(
-                navController = navController,
-                startDestination = Screen.Home.route,
-                modifier = modifier.padding(paddingValues)
-            ) {
-                composable(Screen.Home.route) {
+
+            if (showBottomBar) {
+                BottomNavigation(navController)
+            }
+        }
+    ) { paddingValues ->
+        val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+
+        Box(modifier = Modifier.padding(paddingValues)) {
+            when (currentRoute) {
+                Screen.Home.route -> {
                     HomeScreen(
                         onProductClick = { product ->
                             navController.navigate(Screen.ProductDetail.createRoute(product.id))
@@ -71,45 +145,13 @@ fun AppNavigation(
                         }
                     )
                 }
-
-                composable(Screen.Search.route) {
-                    SearchScreen(
-                        onBackClick = {
-                            navController.popBackStack()
-                        },
-                        onProductClick = { product ->
-                            navController.navigate(Screen.ProductDetail.createRoute(product.id))
-                        },
-
-                    )
-                }
-
-                composable(Screen.Cart.route) {
+                Screen.Cart.route -> {
                     CartScreen()
                 }
-
-                composable(Screen.Profile.route) {
+                Screen.Profile.route -> {
                     ProfileScreen()
-                }
-
-                composable(
-                    route = Screen.ProductDetail.route,
-                    arguments = listOf(navArgument("productId") { type = NavType.IntType })
-                ) { backStackEntry ->
-                    val productId = backStackEntry.arguments?.getInt("productId") ?: 0
-                    ProductDetailScreen(
-                        productId = productId,
-                        onBackClick = { navController.navigateUp() }
-                    )
                 }
             }
         }
-    } else {
-        // Login Screen
-        LoginScreen(
-            onLoginSuccess = {
-                // Navigation will be handled by AuthViewModel state change
-            }
-        )
     }
 }

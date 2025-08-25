@@ -15,7 +15,8 @@ data class AuthUiState(
     val isLoading: Boolean = false,
     val isLoggedIn: Boolean = false,
     val user: User? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val isInitializing: Boolean = true // Untuk splash screen loading
 )
 
 @HiltViewModel
@@ -35,7 +36,12 @@ class AuthViewModel @Inject constructor(
     private fun checkLoginStatus() {
         viewModelScope.launch {
             isLoggedInUseCase().collect { isLoggedIn ->
-                _uiState.update { it.copy(isLoggedIn = isLoggedIn) }
+                _uiState.update {
+                    it.copy(
+                        isLoggedIn = isLoggedIn,
+                        isInitializing = false // Set false setelah login status dicek
+                    )
+                }
             }
         }
     }
