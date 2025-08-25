@@ -292,7 +292,12 @@ fun HomeScreen(
                 when {
                     productUiState.isLoading -> {
                         // Loading State
-                        LazyVerticalGrid(
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            LazyVerticalGrid(
                             columns = GridCells.Fixed(2),
                             contentPadding = PaddingValues(16.dp),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -301,6 +306,7 @@ fun HomeScreen(
                             items(6) {
                                 PlaceholderCard()
                             }
+                        }
                         }
                     }
 
