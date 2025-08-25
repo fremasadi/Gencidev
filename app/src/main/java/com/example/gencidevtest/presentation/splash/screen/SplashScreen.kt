@@ -17,7 +17,7 @@ import kotlinx.coroutines.delay
 fun SplashScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToHome: () -> Unit,
-    onSplashCompleted: () -> Unit, // Callback baru untuk menandai splash selesai
+    onSplashCompleted: () -> Unit,
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val uiState by authViewModel.uiState.collectAsState()
@@ -62,7 +62,7 @@ fun SplashScreen(
 
             // App Name
             Text(
-                text = "Genci Dev Test",
+                text = "GenciDev Test",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimary
