@@ -1,7 +1,18 @@
 package com.example.gencidevtest.presentation.home.screen
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -10,8 +21,22 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,57 +44,67 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.gencidevtest.domain.model.Product
 import com.example.gencidevtest.presentation.cart.viewmodel.CartViewModel
+import com.example.gencidevtest.presentation.common.converter.PriceConverter
 import com.example.gencidevtest.presentation.home.viewmodel.ProductDetailViewModel
 
 @SuppressLint("DefaultLocale")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
     productId: Int,
     onBackClick: () -> Unit,
     productDetailViewModel: ProductDetailViewModel = hiltViewModel(),
-    cartViewModel: CartViewModel = hiltViewModel()
+    cartViewModel: CartViewModel = hiltViewModel(),
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
     val uiState by productDetailViewModel.uiState.collectAsState()
     val cartUiState by cartViewModel.uiState.collectAsState()
-    var selectedImageIndex by remember { mutableStateOf(0) }
+    var selectedImageIndex by remember { mutableIntStateOf(0) }
 
     // Load product detail when screen opens
     LaunchedEffect(productId) {
         productDetailViewModel.loadProductDetail(productId)
     }
 
-    // Show add to cart messages
-    LaunchedEffect(cartUiState.addToCartMessage) {
-        cartUiState.addToCartMessage?.let {
-            // You can show snackbar here if needed
-        }
-    }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Product Detail") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+        // Custom Top App Bar
+        Surface(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back"
+                    )
                 }
-            )
+
+                Text(
+                    text = "Product Detail",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
         }
-    ) { paddingValues ->
+
+        // Content
         when {
             uiState.isLoading -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
@@ -80,7 +115,6 @@ fun ProductDetailScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues)
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
@@ -106,9 +140,7 @@ fun ProductDetailScreen(
                 val product = uiState.product!!
 
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
@@ -117,7 +149,6 @@ fun ProductDetailScreen(
                         ProductImageSection(
                             images = product.images,
                             selectedIndex = selectedImageIndex,
-                            onImageSelected = { selectedImageIndex = it }
                         )
                     }
 
@@ -204,7 +235,6 @@ fun ProductDetailScreen(
 private fun ProductImageSection(
     images: List<String>,
     selectedIndex: Int,
-    onImageSelected: (Int) -> Unit
 ) {
     Column {
         // Main Image
@@ -302,21 +332,26 @@ private fun ProductBasicInfo(product: Product) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
+                // Original Price (sebelum diskon)
                 if (product.discountPercentage > 0) {
                     val originalPrice = product.price / (1 - product.discountPercentage / 100)
                     Text(
-                        text = "$${String.format("%.2f", originalPrice)}",
+                        text = "$${PriceConverter.format(originalPrice)}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
                     )
                 }
+
+                // Final Price (setelah diskon)
                 Text(
-                    text = "$${String.format("%.2f", product.price)}",
+                    text = "$${PriceConverter.format(product.price)}",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
+
+                // Discount label
                 if (product.discountPercentage > 0) {
                     Text(
                         text = "${String.format("%.0f", product.discountPercentage)}% OFF",

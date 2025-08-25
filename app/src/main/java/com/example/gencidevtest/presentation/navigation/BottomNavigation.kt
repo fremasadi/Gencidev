@@ -16,9 +16,9 @@ sealed class BottomNavItem(
     val icon: ImageVector,
     val label: String
 ) {
-    object Home : BottomNavItem("home", Icons.Default.Home, "Home")
-    object Cart : BottomNavItem("cart", Icons.Default.ShoppingCart, "Cart")
-    object Profile : BottomNavItem("profile", Icons.Default.Person, "Profile")
+    object Home : BottomNavItem(Screen.Home.route, Icons.Default.Home, "Home")
+    object Cart : BottomNavItem(Screen.Cart.route, Icons.Default.ShoppingCart, "Cart")
+    object Profile : BottomNavItem(Screen.Profile.route, Icons.Default.Person, "Profile")
 }
 
 @Composable
@@ -42,12 +42,16 @@ fun BottomNavigation(
                 selected = currentRoute == item.route,
                 onClick = {
                     navController.navigate(item.route) {
+
                         navController.graph.startDestinationRoute?.let { route ->
                             popUpTo(route) {
                                 saveState = true
                             }
                         }
+                        // Avoid multiple copies of the same destination when
+                        // reselecting the same item
                         launchSingleTop = true
+                        // Restore state when reselecting a previously selected item
                         restoreState = true
                     }
                 }

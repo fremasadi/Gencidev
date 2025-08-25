@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.gencidevtest.domain.model.Product
+import com.example.gencidevtest.presentation.common.converter.PriceConverter
 
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,16 +36,37 @@ fun ProductCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
-            // Loading Gambar Produk
-            AsyncImage(
-                model = product.thumbnail.ifEmpty { "https://via.placeholder.com/200x150" },
-                contentDescription = product.title,
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
-                    .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
-                contentScale = ContentScale.Crop
-            )
+                    .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+            ) {
+                // Gambar produk
+                AsyncImage(
+                    model = product.thumbnail.ifEmpty { "https://via.placeholder.com/200x150" },
+                    contentDescription = product.title,
+                    modifier = Modifier.matchParentSize(),
+                    contentScale = ContentScale.Crop
+                )
+
+                // Stock info di pojok kanan atas
+                if (product.stock <= 10) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.85f),
+                        shape = RoundedCornerShape(bottomStart = 8.dp),
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    ) {
+                        Text(
+                            text = "Only ${product.stock} left",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onError,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+            }
+
 
             Column(
                 modifier = Modifier
@@ -56,7 +78,7 @@ fun ProductCard(
                     text = product.title,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 2,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
@@ -81,7 +103,7 @@ fun ProductCard(
                 ) {
                     // Price
                     Text(
-                        text = "$${String.format("%.2f", product.price)}",
+                        text = "$${PriceConverter.format(product.price)}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -102,16 +124,6 @@ fun ProductCard(
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
-
-                // Stock info
-                if (product.stock <= 10) {
-                    Text(
-                        text = "Only ${product.stock} left",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                }
 
 
             }

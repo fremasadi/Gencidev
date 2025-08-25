@@ -4,9 +4,7 @@ package com.example.gencidevtest.presentation.home.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gencidevtest.domain.model.Category
 import com.example.gencidevtest.domain.model.Product
-import com.example.gencidevtest.domain.usecase.GetCategoriesUseCase
 import com.example.gencidevtest.domain.usecase.GetProductsByCategoryUseCase
 import com.example.gencidevtest.domain.usecase.GetProductsUseCase
 import com.example.gencidevtest.domain.usecase.SearchProductsUseCase
@@ -17,22 +15,25 @@ import javax.inject.Inject
 
 data class ProductUiState(
     val products: List<Product> = emptyList(),
-    val categories: List<Category> = emptyList(),
     val isLoading: Boolean = false,
-    val isLoadingCategories: Boolean = false,
     val isRefreshing: Boolean = false,
     val errorMessage: String? = null,
     val searchQuery: String = "",
-    val selectedCategory: Category? = null,
     val isOffline: Boolean = false,
-    val cacheInfo: String? = null
+    val cacheInfo: String? = null,
+    val currentFilter: ProductFilter = ProductFilter.All
 )
+
+sealed class ProductFilter {
+    object All : ProductFilter()
+    data class Search(val query: String) : ProductFilter()
+    data class Category(val categorySlug: String) : ProductFilter()
+}
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(
     private val getProductsUseCase: GetProductsUseCase,
     private val searchProductsUseCase: SearchProductsUseCase,
-    private val getCategoriesUseCase: GetCategoriesUseCase,
     private val getProductsByCategoryUseCase: GetProductsByCategoryUseCase
 ) : ViewModel() {
 
@@ -44,60 +45,23 @@ class ProductViewModel @Inject constructor(
     val uiState: StateFlow<ProductUiState> = _uiState.asStateFlow()
 
     init {
-        Log.d(TAG, "ProductViewModel initialized, loading initial data")
-        loadInitialData()
-    }
-
-    private fun loadInitialData() {
-        Log.d(TAG, "Loading initial data (categories and products)")
-        loadCategories()
+        Log.d(TAG, "ProductViewModel initialized")
         loadProducts()
-    }
-
-    private fun loadCategories() {
-        viewModelScope.launch {
-            Log.d(TAG, "Starting to load categories")
-            _uiState.update { it.copy(isLoadingCategories = true) }
-
-            try {
-                getCategoriesUseCase()
-                    .onSuccess { categories ->
-                        Log.d(TAG, "Successfully loaded ${categories.size} categories")
-                        _uiState.update {
-                            it.copy(
-                                categories = categories,
-                                isLoadingCategories = false,
-                                errorMessage = null
-                            )
-                        }
-                    }
-                    .onFailure { exception ->
-                        Log.e(TAG, "Failed to load categories", exception)
-                        _uiState.update {
-                            it.copy(
-                                isLoadingCategories = false,
-                                errorMessage = "Failed to load categories: ${exception.message}"
-                            )
-                        }
-                    }
-            } catch (e: Exception) {
-                Log.e(TAG, "Exception while loading categories", e)
-                _uiState.update {
-                    it.copy(
-                        isLoadingCategories = false,
-                        errorMessage = "An error occurred while loading categories"
-                    )
-                }
-            }
-        }
     }
 
     fun loadProducts(showLoading: Boolean = true) {
         viewModelScope.launch {
-            Log.d(TAG, "Starting to load products, showLoading: $showLoading")
+            Log.d(TAG, "Starting to load all products, showLoading: $showLoading")
 
             if (showLoading) {
-                _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                _uiState.update {
+                    it.copy(
+                        isLoading = true,
+                        errorMessage = null,
+                        currentFilter = ProductFilter.All,
+                        searchQuery = ""
+                    )
+                }
             }
 
             try {
@@ -109,8 +73,6 @@ class ProductViewModel @Inject constructor(
                                 products = products,
                                 isLoading = false,
                                 isRefreshing = false,
-                                selectedCategory = null,
-                                searchQuery = "",
                                 errorMessage = null
                             )
                         }
@@ -138,36 +100,28 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun refreshData() {
-        Log.d(TAG, "Refreshing all data")
-        _uiState.update { it.copy(isRefreshing = true) }
-
-        // Refresh both categories and products
-        loadCategories()
-        loadProducts(showLoading = false)
-    }
-
     fun searchProducts(query: String) {
         Log.d(TAG, "Searching products with query: '$query'")
-        _uiState.update {
-            it.copy(
-                searchQuery = query,
-                selectedCategory = null,
-                errorMessage = null
-            )
-        }
 
-        if (query.isEmpty()) {
+        if (query.trim().isEmpty()) {
             Log.d(TAG, "Empty search query, loading all products")
             loadProducts()
             return
+        }
+
+        _uiState.update {
+            it.copy(
+                searchQuery = query.trim(),
+                currentFilter = ProductFilter.Search(query.trim()),
+                errorMessage = null
+            )
         }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
             try {
-                searchProductsUseCase(query)
+                searchProductsUseCase(query.trim())
                     .onSuccess { products ->
                         Log.d(TAG, "Search returned ${products.size} products for query: '$query'")
                         _uiState.update {
@@ -199,46 +153,24 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun selectCategory(category: Category?) {
-        val currentSelected = _uiState.value.selectedCategory
-
-        Log.d(TAG, "Selecting category: ${category?.name ?: "All"}")
-
-        // If clicking the same category, deselect it
-        if (currentSelected?.slug == category?.slug) {
-            Log.d(TAG, "Deselecting current category, loading all products")
-            _uiState.update {
-                it.copy(
-                    selectedCategory = null,
-                    searchQuery = "",
-                    errorMessage = null
-                )
-            }
-            loadProducts()
-            return
-        }
+    fun loadProductsByCategory(categorySlug: String) {
+        Log.d(TAG, "Loading products for category: $categorySlug")
 
         _uiState.update {
             it.copy(
-                selectedCategory = category,
+                currentFilter = ProductFilter.Category(categorySlug),
                 searchQuery = "",
                 errorMessage = null
             )
-        }
-
-        if (category == null) {
-            Log.d(TAG, "No category selected, loading all products")
-            loadProducts()
-            return
         }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
             try {
-                getProductsByCategoryUseCase(category.slug)
+                getProductsByCategoryUseCase(categorySlug)
                     .onSuccess { products ->
-                        Log.d(TAG, "Successfully loaded ${products.size} products for category: ${category.name}")
+                        Log.d(TAG, "Successfully loaded ${products.size} products for category: $categorySlug")
                         _uiState.update {
                             it.copy(
                                 products = products,
@@ -248,16 +180,16 @@ class ProductViewModel @Inject constructor(
                         }
                     }
                     .onFailure { exception ->
-                        Log.e(TAG, "Failed to load products for category: ${category.name}", exception)
+                        Log.e(TAG, "Failed to load products for category: $categorySlug", exception)
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                errorMessage = "Failed to load products for ${category.name}: ${exception.message}"
+                                errorMessage = "Failed to load products for category: ${exception.message}"
                             )
                         }
                     }
             } catch (e: Exception) {
-                Log.e(TAG, "Exception while loading products for category: ${category.name}", e)
+                Log.e(TAG, "Exception while loading products for category: $categorySlug", e)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -268,6 +200,29 @@ class ProductViewModel @Inject constructor(
         }
     }
 
+    fun refreshData() {
+        Log.d(TAG, "Refreshing products data")
+        _uiState.update { it.copy(isRefreshing = true) }
+
+        // Refresh based on current filter
+        when (val currentFilter = _uiState.value.currentFilter) {
+            is ProductFilter.All -> loadProducts(showLoading = false)
+            is ProductFilter.Search -> searchProducts(currentFilter.query)
+            is ProductFilter.Category -> loadProductsByCategory(currentFilter.categorySlug)
+        }
+    }
+
+    fun clearSearch() {
+        Log.d(TAG, "Clearing search")
+        _uiState.update {
+            it.copy(
+                searchQuery = "",
+                currentFilter = ProductFilter.All
+            )
+        }
+        loadProducts()
+    }
+
     fun clearError() {
         Log.d(TAG, "Clearing error message")
         _uiState.update { it.copy(errorMessage = null) }
@@ -275,22 +230,20 @@ class ProductViewModel @Inject constructor(
 
     fun retryLastOperation() {
         Log.d(TAG, "Retrying last operation")
-        val currentState = _uiState.value
-
         clearError()
 
-        when {
-            currentState.searchQuery.isNotEmpty() -> {
-                Log.d(TAG, "Retrying search: ${currentState.searchQuery}")
-                searchProducts(currentState.searchQuery)
-            }
-            currentState.selectedCategory != null -> {
-                Log.d(TAG, "Retrying category filter: ${currentState.selectedCategory.name}")
-                selectCategory(currentState.selectedCategory)
-            }
-            else -> {
+        when (val currentFilter = _uiState.value.currentFilter) {
+            is ProductFilter.All -> {
                 Log.d(TAG, "Retrying load all products")
                 loadProducts()
+            }
+            is ProductFilter.Search -> {
+                Log.d(TAG, "Retrying search: ${currentFilter.query}")
+                searchProducts(currentFilter.query)
+            }
+            is ProductFilter.Category -> {
+                Log.d(TAG, "Retrying category filter: ${currentFilter.categorySlug}")
+                loadProductsByCategory(currentFilter.categorySlug)
             }
         }
     }
@@ -298,7 +251,6 @@ class ProductViewModel @Inject constructor(
     // Method to handle network state changes
     fun updateNetworkState(isOnline: Boolean) {
         val wasOffline = _uiState.value.isOffline
-        val isNowOnline = !isOnline
 
         _uiState.update { it.copy(isOffline = !isOnline) }
 
@@ -309,7 +261,10 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-
+    // Helper methods
+    fun isSearchActive(): Boolean {
+        return _uiState.value.currentFilter is ProductFilter.Search
+    }
 
     override fun onCleared() {
         super.onCleared()
