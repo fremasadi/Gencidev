@@ -83,8 +83,7 @@ class ProfileViewModel @Inject constructor(
             userRepository.getUserById(userId).fold(
                 onSuccess = { user ->
                     if (user != null) {
-                        // Load additional details from Room database
-                        // This would include gender, last login time, etc.
+
                         loadAdditionalUserInfo(userId)
                     }
                 },
@@ -107,18 +106,15 @@ class ProfileViewModel @Inject constructor(
 
     private suspend fun loadAdditionalUserInfo(userId: Int) {
         try {
-            // Here you could load additional info from Room
-            // For now, we'll simulate this with the current user data
             userRepository.getUserById(userId).fold(
                 onSuccess = { user ->
-                    // Format current date as last login time for demo
                     val dateFormat = SimpleDateFormat("MMM dd, yyyy 'at' HH:mm", Locale.getDefault())
                     val lastLoginFormatted = dateFormat.format(Date())
 
                     _uiState.update {
                         it.copy(
                             lastLoginTime = lastLoginFormatted,
-                            gender = "Not specified", // This would come from Room
+                            gender = "Not specified",
                             isLoading = false
                         )
                     }
@@ -142,21 +138,4 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun loadAllUsers() {
-        viewModelScope.launch {
-            userRepository.getAllUsers().collect { users ->
-                _uiState.update {
-                    it.copy(allUsers = users)
-                }
-            }
-        }
-    }
-
-    fun clearError() {
-        _uiState.update { it.copy(errorMessage = null) }
-    }
-
-    fun refreshProfile() {
-        loadCurrentUserProfile()
-    }
 }

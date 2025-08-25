@@ -1,11 +1,16 @@
+// app/src/main/java/com/example/gencidevtest/di/NetworkModule.kt
 package com.example.gencidevtest.di
 
+import android.content.Context
 import com.example.gencidevtest.data.remote.api.AuthApiService
 import com.example.gencidevtest.data.remote.api.CartApiService
 import com.example.gencidevtest.data.remote.api.ProductApiService
+import com.example.gencidevtest.data.util.NetworkConnectionObserver
+import com.example.gencidevtest.data.util.NetworkUtil
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -55,5 +60,17 @@ object NetworkModule {
     @Singleton
     fun provideCartApiService(retrofit: Retrofit): CartApiService {
         return retrofit.create(CartApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkUtil(@ApplicationContext context: Context): NetworkUtil {
+        return NetworkUtil(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkConnectionObserver(@ApplicationContext context: Context): NetworkConnectionObserver {
+        return NetworkConnectionObserver(context)
     }
 }

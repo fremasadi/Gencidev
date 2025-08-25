@@ -3,6 +3,8 @@ package com.example.gencidevtest.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.gencidevtest.data.local.dao.CategoryDao
+import com.example.gencidevtest.data.local.dao.ProductDao
 import com.example.gencidevtest.data.local.dao.UserDao
 import com.example.gencidevtest.data.local.database.AppDatabase
 import dagger.Module
@@ -31,5 +33,15 @@ object DatabaseModule {
     @Provides
     fun provideUserDao(database: AppDatabase): UserDao {
         return database.userDao()
+    }
+
+    @Provides
+    fun provideProductDao(database: AppDatabase): ProductDao {
+        return database.productDao()
+    }
+
+    @Provides
+    fun provideCategoryDao(database: AppDatabase): CategoryDao {
+        return database.categoryDao()
     }
 }
