@@ -367,14 +367,14 @@ private fun CartProductItem(
                 ) {
                     if (product.total != product.discountedTotal) {
                         Text(
-                            text = "$${String.format("%.2f", product.total)}",
+                            text = "$${PriceConverter.format( product.total)}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textDecoration = TextDecoration.LineThrough
                         )
                     }
                     Text(
-                        text = "$${String.format("%.2f", product.discountedTotal)}",
+                        text = "$${PriceConverter.format( product.discountedTotal)}",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.primary
