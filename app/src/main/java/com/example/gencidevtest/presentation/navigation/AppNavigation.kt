@@ -39,6 +39,40 @@ fun AppNavigation(
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val authState by authViewModel.uiState.collectAsState()
+
+    // Observe auth state changes untuk navigation
+    LaunchedEffect(authState.isLoggedIn, authState.isInitializing) {
+        val currentRoute = navController.currentDestination?.route
+
+        when {
+            // Jika masih initializing, stay di splash
+            authState.isInitializing -> {
+                if (currentRoute != Screen.Splash.route) {
+                    navController.navigate(Screen.Splash.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
+            // Jika logged in, navigate ke home (kecuali sudah di main screens)
+            authState.isLoggedIn -> {
+                if (currentRoute == Screen.Splash.route || currentRoute == Screen.Login.route) {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
+            // Jika not logged in, navigate ke login
+            !authState.isLoggedIn -> {
+                if (currentRoute != Screen.Login.route && currentRoute != Screen.Splash.route) {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -57,7 +91,8 @@ fun AppNavigation(
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
-                }
+                },
+                authViewModel = authViewModel
             )
         }
 
@@ -68,21 +103,31 @@ fun AppNavigation(
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
-                }
+                },
+                viewModel = authViewModel
             )
         }
 
-        // Main App Screens with Bottom Navigation
+        // Main App Screens dengan Bottom Navigation
         composable(Screen.Home.route) {
-            MainAppContent(navController = navController)
+            MainAppContent(
+                navController = navController,
+                authViewModel = authViewModel
+            )
         }
 
         composable(Screen.Cart.route) {
-            MainAppContent(navController = navController)
+            MainAppContent(
+                navController = navController,
+                authViewModel = authViewModel
+            )
         }
 
         composable(Screen.Profile.route) {
-            MainAppContent(navController = navController)
+            MainAppContent(
+                navController = navController,
+                authViewModel = authViewModel
+            )
         }
 
         // Search Screen (tanpa bottom navigation)
@@ -114,7 +159,8 @@ fun AppNavigation(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainAppContent(
-    navController: NavHostController
+    navController: NavHostController,
+    authViewModel: AuthViewModel
 ) {
     Scaffold(
         bottomBar = {
@@ -149,7 +195,9 @@ private fun MainAppContent(
                     CartScreen()
                 }
                 Screen.Profile.route -> {
-                    ProfileScreen()
+                    ProfileScreen(
+                        authViewModel = authViewModel
+                    )
                 }
             }
         }

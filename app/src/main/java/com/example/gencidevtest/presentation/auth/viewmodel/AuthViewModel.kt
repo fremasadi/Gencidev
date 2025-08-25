@@ -39,7 +39,9 @@ class AuthViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoggedIn = isLoggedIn,
-                        isInitializing = false // Set false setelah login status dicek
+                        isInitializing = false, // Set false setelah login status dicek
+                        // Clear user data jika tidak logged in
+                        user = if (!isLoggedIn) null else it.user
                     )
                 }
             }
@@ -73,7 +75,35 @@ class AuthViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
-            logoutUseCase()
+            try {
+                // Update UI state immediately untuk responsive UX
+                _uiState.update {
+                    it.copy(
+                        isLoggedIn = false,
+                        user = null,
+                        errorMessage = null
+                    )
+                }
+
+                // Panggil logout use case
+                logoutUseCase()
+
+            } catch (e: Exception) {
+                // Jika ada error, tetap set sebagai logged out
+                // karena lebih aman untuk memaksa user login ulang
+                _uiState.update {
+                    it.copy(
+                        isLoggedIn = false,
+                        user = null,
+                        errorMessage = null
+                    )
+                }
+            }
         }
+    }
+
+    // Method untuk clear error message
+    fun clearError() {
+        _uiState.update { it.copy(errorMessage = null) }
     }
 }

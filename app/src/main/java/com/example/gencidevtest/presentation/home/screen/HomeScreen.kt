@@ -54,8 +54,8 @@ import com.example.gencidevtest.data.util.NetworkConnectionObserver
 import com.example.gencidevtest.domain.model.Product
 import com.example.gencidevtest.presentation.cart.viewmodel.CartViewModel
 import com.example.gencidevtest.presentation.home.viewmodel.CategoryViewModel
-import com.example.gencidevtest.presentation.common.components.CategoryCard
-import com.example.gencidevtest.presentation.common.components.ProductCard
+import com.example.gencidevtest.presentation.common.components.card.CategoryCard
+import com.example.gencidevtest.presentation.common.components.card.ProductCard
 import com.example.gencidevtest.presentation.home.viewmodel.ProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)

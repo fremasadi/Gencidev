@@ -1,4 +1,4 @@
-package com.example.gencidevtest.presentation.common.components
+package com.example.gencidevtest.presentation.common.components.card
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -185,7 +186,7 @@ fun CartCard(
                             text = "$${String.format("%.2f", cart.total)}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                            textDecoration = TextDecoration.LineThrough
                         )
                     }
                     Text(
@@ -368,7 +369,7 @@ private fun CartProductItem(
                             text = "$${String.format("%.2f", product.total)}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                            textDecoration = TextDecoration.LineThrough
                         )
                     }
                     Text(

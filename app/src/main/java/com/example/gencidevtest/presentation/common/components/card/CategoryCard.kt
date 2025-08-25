@@ -1,4 +1,4 @@
-package com.example.gencidevtest.presentation.common.components
+package com.example.gencidevtest.presentation.common.components.card
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.padding

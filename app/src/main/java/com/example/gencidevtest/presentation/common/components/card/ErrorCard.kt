@@ -1,4 +1,4 @@
-package com.example.gencidevtest.presentation.common.components
+package com.example.gencidevtest.presentation.common.components.card
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*

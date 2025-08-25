@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/gencidevtest/presentation/profile/screen/ProfileScreen.kt
 package com.example.gencidevtest.presentation.profile.screen
 
 import androidx.compose.foundation.layout.Arrangement
@@ -15,8 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -24,11 +25,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.gencidevtest.presentation.auth.viewmodel.AuthViewModel
+import com.example.gencidevtest.presentation.common.components.dialog.ConfirmDialog
 import com.example.gencidevtest.presentation.profile.viewmodel.ProfileViewModel
 
 @Composable
@@ -47,11 +54,23 @@ fun ProfileScreen(
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
     val profileUiState by profileViewModel.uiState.collectAsState()
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
-    // Load profile data when screen opens
+    // Load profile
     LaunchedEffect(Unit) {
         profileViewModel.loadCurrentUserProfile()
     }
+
+    // Logout Dialog
+    ConfirmDialog(
+        showDialog = showLogoutDialog,
+        onDismiss = { showLogoutDialog = false },
+        title = "Confirm Logout",
+        message = "Are you sure you want to leave the app?",
+        confirmButtonText = "Yes",
+        onConfirm = { authViewModel.logout() }
+    )
+
 
     Column(
         modifier = modifier
@@ -93,12 +112,25 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.bodyMedium
                         )
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                        Button(
-                            onClick = { profileViewModel.loadCurrentUserProfile() }
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text("Retry")
+                            OutlinedButton(
+                                onClick = { profileViewModel.loadCurrentUserProfile() }
+                            ) {
+                                Text("Retry")
+                            }
+
+                            Button(
+                                onClick = { showLogoutDialog = true },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.error
+                                )
+                            ) {
+                                Text("Logout")
+                            }
                         }
                     }
                 }
@@ -176,62 +208,35 @@ fun ProfileScreen(
                         }
                     }
 
-
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // Logout Button
                     Button(
-                        onClick = { authViewModel.logout() },
+                        onClick = { showLogoutDialog = true },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error
                         )
                     ) {
-                        Text(
-                            text = "Logout",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onError
-                        )
-                    }
-                }
-            }
-
-            else -> {
-                // No user data available
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "No profile data available",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = "Please try logging in again",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Button(
-                            onClick = { authViewModel.logout() }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text("Go to Login")
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = "Logout",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onError
+                            )
                         }
                     }
                 }
             }
+
         }
     }
 }

@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.gencidevtest.presentation.cart.viewmodel.CartViewModel
-import com.example.gencidevtest.presentation.common.components.CartCard
+import com.example.gencidevtest.presentation.common.components.card.CartCard
 import com.example.gencidevtest.presentation.common.converter.PriceConverter
 
 @OptIn(ExperimentalMaterialApi::class)

@@ -11,8 +11,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.gencidevtest.presentation.auth.viewmodel.AuthViewModel
-import com.example.gencidevtest.presentation.common.components.ErrorCard
-import com.example.gencidevtest.presentation.common.components.LoadingButton
+import com.example.gencidevtest.presentation.common.components.card.ErrorCard
+import com.example.gencidevtest.presentation.common.components.button.LoadingButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

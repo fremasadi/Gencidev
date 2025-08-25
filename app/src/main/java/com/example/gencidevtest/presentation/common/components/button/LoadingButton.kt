@@ -1,4 +1,4 @@
-package com.example.gencidevtest.presentation.common.components
+package com.example.gencidevtest.presentation.common.components.button
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size

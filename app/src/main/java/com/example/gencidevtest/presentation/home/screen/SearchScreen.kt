@@ -43,7 +43,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.gencidevtest.domain.model.Product
-import com.example.gencidevtest.presentation.common.components.ProductCard
+import com.example.gencidevtest.presentation.common.components.card.ProductCard
 import com.example.gencidevtest.presentation.home.viewmodel.ProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
