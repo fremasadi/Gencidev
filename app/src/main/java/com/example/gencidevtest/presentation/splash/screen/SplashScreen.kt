@@ -52,7 +52,7 @@ fun SplashScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Simple App Logo
+            // App Logo
             Text(
                 text = "🛍️",
                 fontSize = 64.sp

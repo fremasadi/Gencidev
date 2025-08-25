@@ -55,6 +55,7 @@ import com.example.gencidevtest.domain.model.Product
 import com.example.gencidevtest.presentation.cart.viewmodel.CartViewModel
 import com.example.gencidevtest.presentation.home.viewmodel.CategoryViewModel
 import com.example.gencidevtest.presentation.common.components.card.CategoryCard
+import com.example.gencidevtest.presentation.common.components.card.PlaceholderCard
 import com.example.gencidevtest.presentation.common.components.card.ProductCard
 import com.example.gencidevtest.presentation.home.viewmodel.ProductViewModel
 
@@ -291,18 +292,15 @@ fun HomeScreen(
                 when {
                     productUiState.isLoading -> {
                         // Loading State
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            contentPadding = PaddingValues(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            CircularProgressIndicator()
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = if (productUiState.isOffline) "Loading cached produk..." else "Loading produk...",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            items(6) {
+                                PlaceholderCard()
+                            }
                         }
                     }
 
