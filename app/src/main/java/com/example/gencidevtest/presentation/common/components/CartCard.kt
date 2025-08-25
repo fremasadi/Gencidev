@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/gencidevtest/presentation/common/components/CartCard.kt
 package com.example.gencidevtest.presentation.common.components
 
 import android.annotation.SuppressLint

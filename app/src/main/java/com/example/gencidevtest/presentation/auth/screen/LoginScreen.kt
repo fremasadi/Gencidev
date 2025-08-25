@@ -11,6 +11,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.gencidevtest.presentation.auth.viewmodel.AuthViewModel
+import com.example.gencidevtest.presentation.common.components.ErrorCard
+import com.example.gencidevtest.presentation.common.components.LoadingButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,34 +74,17 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
+        // Login Button
+        LoadingButton(
+            text = "Login",
             onClick = { viewModel.login(username, password) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !uiState.isLoading
-        ) {
-            if (uiState.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            } else {
-                Text("Login")
-            }
-        }
+            isLoading = uiState.isLoading
+        )
 
+        // Error message
         uiState.errorMessage?.let { message ->
             Spacer(modifier = Modifier.height(16.dp))
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer
-                )
-            ) {
-                Text(
-                    text = message,
-                    modifier = Modifier.padding(16.dp),
-                    color = MaterialTheme.colorScheme.onErrorContainer
-                )
-            }
+            ErrorCard(message = message)
         }
     }
 }

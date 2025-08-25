@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/gencidevtest/presentation/home/screen/HomeScreen.kt
 package com.example.gencidevtest.presentation.home.screen
 
 import androidx.compose.foundation.clickable
