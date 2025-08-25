@@ -42,32 +42,33 @@ fun AppNavigation(
     val authViewModel: AuthViewModel = hiltViewModel()
     val authState by authViewModel.uiState.collectAsState()
 
-    // Observe auth state changes untuk navigation
-    LaunchedEffect(authState.isLoggedIn, authState.isInitializing) {
-        val currentRoute = navController.currentDestination?.route
+    // State untuk track apakah splash sudah selesai
+    var splashCompleted by remember { mutableStateOf(false) }
 
-        when {
-            // Jika masih initializing, stay di splash
-            authState.isInitializing -> {
-                if (currentRoute != Screen.Splash.route) {
-                    navController.navigate(Screen.Splash.route) {
-                        popUpTo(0) { inclusive = true }
+    // Observe auth state changes untuk navigation HANYA setelah splash selesai
+    LaunchedEffect(splashCompleted, authState.isLoggedIn, authState.isInitializing) {
+        if (splashCompleted) {
+            val currentRoute = navController.currentDestination?.route
+
+            when {
+                // Jika masih initializing, tetap di splash
+                authState.isInitializing -> {
+                    // Do nothing, stay in current state
+                }
+                // Jika logged in, navigate ke home (kecuali sudah di main screens)
+                authState.isLoggedIn -> {
+                    if (currentRoute == Screen.Splash.route || currentRoute == Screen.Login.route) {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
                 }
-            }
-            // Jika logged in, navigate ke home (kecuali sudah di main screens)
-            authState.isLoggedIn -> {
-                if (currentRoute == Screen.Splash.route || currentRoute == Screen.Login.route) {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
-            // Jika not logged in, navigate ke login
-            !authState.isLoggedIn -> {
-                if (currentRoute != Screen.Login.route && currentRoute != Screen.Splash.route) {
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(0) { inclusive = true }
+                // Jika not logged in, navigate ke login
+                !authState.isLoggedIn -> {
+                    if (currentRoute != Screen.Login.route && currentRoute != Screen.Splash.route) {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
                 }
             }
@@ -91,6 +92,9 @@ fun AppNavigation(
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
+                },
+                onSplashCompleted = {
+                    splashCompleted = true
                 },
                 authViewModel = authViewModel
             )

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.gencidevtest.domain.model.Cart
 import com.example.gencidevtest.domain.model.CartProduct
+import com.example.gencidevtest.presentation.common.converter.PriceConverter
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -183,14 +184,14 @@ fun CartCard(
                 ) {
                     if (cart.total != cart.discountedTotal) {
                         Text(
-                            text = "$${String.format("%.2f", cart.total)}",
+                            text = "$${PriceConverter.format(cart.total)}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textDecoration = TextDecoration.LineThrough
                         )
                     }
                     Text(
-                        text = "$${String.format("%.2f", cart.discountedTotal)}",
+                        text = "$${PriceConverter.format( cart.discountedTotal)}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -198,7 +199,7 @@ fun CartCard(
                     if (cart.total != cart.discountedTotal) {
                         val savedAmount = cart.total - cart.discountedTotal
                         Text(
-                            text = "Saved $${String.format("%.2f", savedAmount)}",
+                            text = "Saved $${PriceConverter.format( savedAmount)}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.secondary
                         )

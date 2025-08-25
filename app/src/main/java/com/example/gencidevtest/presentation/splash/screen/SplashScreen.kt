@@ -17,6 +17,7 @@ import kotlinx.coroutines.delay
 fun SplashScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToHome: () -> Unit,
+    onSplashCompleted: () -> Unit, // Callback baru untuk menandai splash selesai
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val uiState by authViewModel.uiState.collectAsState()
@@ -24,8 +25,9 @@ fun SplashScreen(
     var isMinimumTimeElapsed by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        delay(1500)
+        delay(3000)
         isMinimumTimeElapsed = true
+        onSplashCompleted()
     }
 
     // Navigate setelah minimum time dan status login sudah dicek
@@ -74,14 +76,6 @@ fun SplashScreen(
                 color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
             )
 
-            Spacer(modifier = Modifier.height(48.dp))
-
-            // Loading Indicator
-            CircularProgressIndicator(
-                modifier = Modifier.size(24.dp),
-                color = MaterialTheme.colorScheme.onPrimary,
-                strokeWidth = 2.dp
-            )
         }
     }
 }
